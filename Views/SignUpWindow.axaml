@@ -1,0 +1,154 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:ReLPC"
+        xmlns:vm="clr-namespace:ReLPC.ViewModels"
+        x:Class="ReLPC.SignUpWindow"
+        x:DataType="vm:SignUpWindowViewModel"
+        Title="Sign Up"
+        Width="840"
+        Height="620"
+        WindowStartupLocation="CenterScreen"
+        Background="#ff3131"
+        CanResize="True">
+
+  <Window.Resources>
+    <LinearGradientBrush x:Key="PageGradient" StartPoint="0,0" EndPoint="1,1">
+      <GradientStop Color="#FF2D32" Offset="0"/>
+      <GradientStop Color="#FF4B3A" Offset="0.55"/>
+      <GradientStop Color="#FF7442" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="PanelGradient" StartPoint="0,0" EndPoint="1,1">
+      <GradientStop Color="#FF2D32" Offset="0"/>
+      <GradientStop Color="#FF553C" Offset="1"/>
+    </LinearGradientBrush>
+
+    <local:BoolToPasswordIconConverter x:Key="BoolToPasswordIconConverter"/>
+  </Window.Resources>
+
+  <Grid x:Name="PageRoot"
+        Background="{StaticResource PageGradient}">
+    <Border x:Name="SignUpPanel"
+            Margin="28"
+            CornerRadius="24"
+            Background="{StaticResource PanelGradient}"
+            BorderBrush="#80FFFFFF"
+            BorderThickness="1.2"
+            BoxShadow="0 10 30 0 rgba(0,0,0,0.25)">
+
+      <StackPanel HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  Spacing="20">
+
+        <TextBlock Text="Sign Up"
+                   Foreground="White"
+                   FontSize="40"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Center"/>
+
+        <StackPanel Width="400" Spacing="16">
+          <StackPanel Spacing="6">
+            <TextBlock Text="STUDENT ID"
+                       Foreground="White"
+                       FontWeight="SemiBold"/>
+            <TextBox Height="48"
+                     x:DataType="vm:SignUpWindowViewModel"
+                     Text="{Binding Username, Mode=TwoWay}"
+                     Background="White"
+                     BorderBrush="White"
+                     BorderThickness="1.2"
+                     CornerRadius="10"
+                     Padding="12"
+                     Foreground="#333333"
+                     CaretBrush="#333333"/>
+          </StackPanel>
+
+          <StackPanel Spacing="6">
+            <TextBlock Text="PASSWORD"
+                       Foreground="White"
+                       FontWeight="SemiBold"/>
+            <TextBox Height="48"
+                     x:DataType="vm:SignUpWindowViewModel"
+                     Text="{Binding Password, Mode=TwoWay}"
+                     Background="White"
+                     BorderBrush="White"
+                     BorderThickness="1.2"
+                     CornerRadius="10"
+                     Padding="12"
+                     Foreground="#333333"
+                     CaretBrush="#333333"
+                     PasswordChar="{Binding PasswordChar1}">
+              <TextBox.InnerRightContent>
+                <Button Width="42"
+                        Height="42"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Command="{Binding TogglePassword1VisibilityCommand}"
+                        Margin="0,0,8,0">
+                  <Image Width="28"
+                         Height="28"
+                         Source="{Binding IsPasswordVisible1, Converter={StaticResource BoolToPasswordIconConverter}}"/>
+                </Button>
+              </TextBox.InnerRightContent>
+            </TextBox>
+          </StackPanel>
+
+          <StackPanel Spacing="6">
+            <TextBlock Text="CONFIRM PASSWORD"
+                       Foreground="White"
+                       FontWeight="SemiBold"/>
+            <TextBox Height="48"
+                     x:DataType="vm:SignUpWindowViewModel"
+                     Text="{Binding PasswordConfirmation, Mode=TwoWay}"
+                     Background="White"
+                     BorderBrush="White"
+                     BorderThickness="1.2"
+                     CornerRadius="10"
+                     Padding="12"
+                     Foreground="#333333"
+                     CaretBrush="#333333"
+                     PasswordChar="{Binding PasswordChar2}">
+              <TextBox.InnerRightContent>
+                <Button Width="42"
+                        Height="42"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Command="{Binding TogglePassword2VisibilityCommand}"
+                        Margin="0,0,8,0">
+                  <Image Width="28"
+                         Height="28"
+                         Source="{Binding IsPasswordVisible2, Converter={StaticResource BoolToPasswordIconConverter}}"/>
+                </Button>
+              </TextBox.InnerRightContent>
+            </TextBox>
+          </StackPanel>
+
+          <TextBlock x:DataType="vm:SignUpWindowViewModel"
+                     Text="{Binding SignupStatus}"
+                     Foreground="#FFEEDD"
+                     TextWrapping="Wrap"
+                     HorizontalAlignment="Center"
+                     Margin="0,8,0,0"/>
+
+          <Button Content="SIGN UP"
+                  Width="200"
+                  Height="48"
+                  Background="White"
+                  Foreground="#ff3131"
+                  CornerRadius="24"
+                  HorizontalAlignment="Center"
+                  HorizontalContentAlignment="Center"
+                  VerticalContentAlignment="Center"
+                  FontSize="18"
+                  FontWeight="SemiBold"
+                  Margin="0,12,0,0"
+                  Command="{Binding AttemptSignupCommand}"/>
+        </StackPanel>
+      </StackPanel>
+    </Border>
+  </Grid>
+</Window>

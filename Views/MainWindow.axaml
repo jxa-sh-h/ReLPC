@@ -1,0 +1,790 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ReLPC"
+        xmlns:models="clr-namespace:ReLPC.Models"
+        x:Class="ReLPC.MainWindow"
+        x:DataType="local:MainWindow"
+        mc:Ignorable="d"
+        Width="1280"
+        Height="760"
+        MinWidth="980"
+        MinHeight="620"
+        WindowState="FullScreen"
+        Title="ReLPC - MAINWINDOW"
+        WindowStartupLocation="CenterScreen"
+        CanResize="True"
+        WindowDecorations="None"
+        Background="#20100B">
+
+  <Window.Resources>
+    <SolidColorBrush x:Key="AccentBrush" Color="#FFFF4E3B"/>
+    <SolidColorBrush x:Key="AccentSoftBrush" Color="#CCFF4E3B"/>
+    <SolidColorBrush x:Key="GlassPanelBrush" Color="#EFFFFFFF"/>
+    <SolidColorBrush x:Key="GlassStrokeBrush" Color="#CCFF4E3B"/>
+    <FontFamily x:Key="BodyFont">avares://ReLPC/assets/fonts/latinmodern-math.otf#Latin Modern Math</FontFamily>
+  </Window.Resources>
+
+  <Window.Styles>
+    <Style Selector="TextBlock:not(.header)">
+      <Setter Property="FontFamily" Value="{StaticResource BodyFont}"/>
+    </Style>
+    <Style Selector="TextBox">
+      <Setter Property="FontFamily" Value="{StaticResource BodyFont}"/>
+    </Style>
+    <Style Selector="Button">
+      <Setter Property="FontFamily" Value="{StaticResource BodyFont}"/>
+    </Style>
+    <Style Selector="ComboBox">
+      <Setter Property="FontFamily" Value="{StaticResource BodyFont}"/>
+    </Style>
+    <Style Selector="ComboBoxItem">
+      <Setter Property="FontFamily" Value="{StaticResource BodyFont}"/>
+    </Style>
+    <!-- Dataset title: looks like plain text until hover / focus -->
+    <Style Selector="TextBox.dataset-title">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding" Value="6,4"/>
+      <Setter Property="FontSize" Value="14"/>
+      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="Foreground" Value="#885038"/>
+      <Setter Property="CaretBrush" Value="{StaticResource AccentBrush}"/>
+    </Style>
+    <Style Selector="TextBox.dataset-title:pointerover">
+      <Setter Property="Background" Value="#18FFFFFF"/>
+      <Setter Property="BorderBrush" Value="#66FF4E3B"/>
+      <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+    <Style Selector="TextBox.dataset-title:focus">
+      <Setter Property="Background" Value="#F9FFFFFF"/>
+      <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Foreground" Value="#171717"/>
+    </Style>
+  </Window.Styles>
+
+  <Grid RowDefinitions="42,*">
+    <Grid.Background>
+      <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#2C1208" Offset="0"/>
+        <GradientStop Color="#743018" Offset="0.42"/>
+        <GradientStop Color="#1A0D08" Offset="1"/>
+      </LinearGradientBrush>
+    </Grid.Background>
+
+    <Canvas Grid.RowSpan="2"
+            Opacity="0.80">
+      <Rectangle Width="1580"
+               Height="760"
+               Canvas.Left="-140"
+               Canvas.Top="-270"
+               Fill="#ff3131"/>
+      <Rectangle Width="2500"
+               Height="440"
+               Canvas.Left="-200"
+               Canvas.Bottom="-100"
+               Fill="#ff7846"/>
+      <Canvas.Effect>
+        <BlurEffect Radius="500"/>
+      </Canvas.Effect>
+    </Canvas>
+
+    <Border Grid.Row="0"
+            Margin="0,8,8,0"
+            BorderThickness="1"
+            CornerRadius="8"
+            PointerPressed="OnTitleBarPointerPressed"
+            ZIndex="10">
+      <Grid ColumnDefinitions="*,Auto"
+            Margin="14,0,12,0">
+        <StackPanel Orientation="Horizontal"
+                    Spacing="10"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center">
+          <Image Source="avares://ReLPC/assets/icons-logo/icon-logo.png"
+                 Width="40"
+                 Height="40"
+                 VerticalAlignment="Center"/>
+          <Button Width="34"
+                  Height="34"
+                  Padding="0"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  Cursor="Hand"
+                  ToolTip.Tip="Undo (Ctrl+Z)"
+                  IsEnabled="{Binding CanUndo}"
+                  Click="OnUndoClick">
+            <Image Source="avares://ReLPC/assets/elements/undo.png"
+                   Width="20"
+                   Height="20"/>
+          </Button>
+          <Button Width="34"
+                  Height="34"
+                  Padding="0"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  Cursor="Hand"
+                  ToolTip.Tip="Redo (Ctrl+Y)"
+                  IsEnabled="{Binding CanRedo}"
+                  Click="OnRedoClick">
+            <Image Source="avares://ReLPC/assets/elements/redo.png"
+                   Width="20"
+                   Height="20"/>
+          </Button>
+        </StackPanel>
+
+        <StackPanel Grid.Column="1"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Spacing="12">
+          <Button Width="28"
+                  Height="28"
+                  Padding="0"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  Cursor="Hand"
+                  Click="OnMinimizeClick">
+            <Image Source="avares://ReLPC/assets/elements/minimize.png" Width="16" Height="16"/>
+          </Button>
+          <Button Width="28"
+                  Height="28"
+                  Padding="0"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  Cursor="Hand"
+                  Click="OnRestoreDownClick">
+            <Image Source="avares://ReLPC/assets/elements/restore-down.png" Width="16" Height="16"/>
+          </Button>
+          <Button Width="28"
+                  Height="28"
+                  Padding="0"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  Cursor="Hand"
+                  Click="OnCloseClick">
+            <Image Source="avares://ReLPC/assets/elements/close.png" Width="16" Height="16"/>
+          </Button>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Border Grid.Row="1"
+            Margin="8,2,8,8"
+            CornerRadius="18">
+      <Grid x:Name="MainContentGrid"
+            ColumnDefinitions="Auto,166,450,*"
+            ColumnSpacing="3"
+            Margin="0">
+
+        <Border x:Name="ExpandedSidePanel"
+                Grid.Column="0"
+                Width="250"
+                IsVisible="{Binding MenuViewModel.IsMenuOpen}"
+                CornerRadius="8"
+                Padding="28,30">
+          <Border.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+              <GradientStop Color="#CCFF4E3B" Offset="0.46"/>
+              <GradientStop Color="#ff3131" Offset=".5"/>
+            </LinearGradientBrush>
+          </Border.Background>
+
+          <Grid RowDefinitions="Auto,*,Auto">
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Text="DASHBOARD"
+                         Classes="header"
+                         VerticalAlignment="Center"
+                         FontSize="22"
+                         FontWeight="Black"
+                         Foreground="White"/>
+              <Button Grid.Column="1"
+                      Width="34"
+                      Height="34"
+                      Padding="0"
+                      Background="Transparent"
+                      BorderThickness="0"
+                      Cursor="Hand"
+                      Command="{Binding MenuViewModel.ToggleMenuCommand}">
+                <Image Source="avares://ReLPC/assets/elements/close.png"
+                       Width="20"
+                       Height="20"/>
+              </Button>
+            </Grid>
+
+            <StackPanel Grid.Row="1"
+                        Margin="0,34,0,0"
+                        Spacing="20">
+              <Button Background="Transparent"
+                      BorderThickness="0"
+                      Padding="0"
+                      Cursor="Hand"
+                      HorizontalAlignment="Left"
+                      Click="OnFileExplorerClick">
+                <StackPanel Orientation="Horizontal"
+                            Spacing="12">
+                  <Image Source="avares://ReLPC/assets/elements/file-explorer.png"
+                         Width="24"
+                         Height="24"/>
+                  <TextBlock Text="DATA SETS"
+                             VerticalAlignment="Center"
+                             Foreground="White"
+                             FontSize="12"
+                             FontWeight="Bold"/>
+                </StackPanel>
+              </Button>
+
+              <Button Background="Transparent"
+                      BorderThickness="0"
+                      Padding="0"
+                      Cursor="Hand"
+                      HorizontalAlignment="Left"
+                      Click="OnNewDatasetClick">
+                <StackPanel Orientation="Horizontal"
+                            Spacing="12">
+                  <Image Source="avares://ReLPC/assets/elements/new-file.png"
+                         Width="24"
+                         Height="24"/>
+                  <TextBlock Text="NEW DATASET"
+                             VerticalAlignment="Center"
+                             Foreground="White"
+                             FontSize="12"
+                             FontWeight="Bold"/>
+                </StackPanel>
+              </Button>
+
+              <Button Background="Transparent"
+                      BorderThickness="0"
+                      Padding="0"
+                      Cursor="Hand"
+                      HorizontalAlignment="Left"
+                      Click="OnLoadDatasetClick">
+                <StackPanel Orientation="Horizontal"
+                            Spacing="12">
+                  <Image Source="avares://ReLPC/assets/elements/open-file.png"
+                         Width="24"
+                         Height="24"/>
+                  <TextBlock Text="LOAD DATASET"
+                             VerticalAlignment="Center"
+                             Foreground="White"
+                             FontSize="12"
+                             FontWeight="Bold"/>
+                </StackPanel>
+              </Button>
+
+              <Button Background="Transparent"
+                      BorderThickness="0"
+                      Padding="0"
+                      Cursor="Hand"
+                      HorizontalAlignment="Left">
+                <StackPanel Orientation="Horizontal"
+                            Spacing="12">
+                  <Image Source="avares://ReLPC/assets/elements/history.png"
+                         Width="24"
+                         Height="24"/>
+                  <TextBlock Text="HISTORY"
+                             VerticalAlignment="Center"
+                             Foreground="White"
+                             FontSize="12"
+                             FontWeight="Bold"/>
+                </StackPanel>
+              </Button>
+            </StackPanel>
+
+            <Button Grid.Row="2"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Padding="0"
+                    Cursor="Hand"
+                    HorizontalAlignment="Left"
+                    Click="OnLogoutClick">
+              <StackPanel Orientation="Horizontal"
+                          Spacing="12">
+                <Image Source="avares://ReLPC/assets/elements/logout.png"
+                       Width="24"
+                       Height="24"/>
+                <TextBlock Text="LOGOUT"
+                           VerticalAlignment="Center"
+                           Foreground="White"
+                           FontSize="14"
+                           FontWeight="Bold"/>
+              </StackPanel>
+            </Button>
+          </Grid>
+        </Border>
+
+        <Border x:Name="MinimizedSidePanel"
+                Grid.Column="0"
+                Width="56"
+                IsVisible="{Binding MenuViewModel.IsMenuMinimized}"
+                CornerRadius="8">
+          <Border.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+              <GradientStop Color="#CCFF4E3B" Offset="0.46"/>
+              <GradientStop Color="#ff3131" Offset=".5"/>
+            </LinearGradientBrush>
+          </Border.Background>
+          <Grid RowDefinitions="Auto,*,Auto"
+                Margin="0,20">
+            <StackPanel Grid.Row="0"
+                        Spacing="10"
+                        HorizontalAlignment="Center">
+              <Button Width="34"
+                      Height="34"
+                      Padding="0"
+                      Background="Transparent"
+                      BorderThickness="0"
+                      Cursor="Hand"
+                      Command="{Binding MenuViewModel.ToggleMenuCommand}">
+                <Image Source="avares://ReLPC/assets/elements/burger-menu.png"
+                       Width="30"
+                       Height="30"/>
+              </Button>
+              <Button Width="34"
+                      Height="34"
+                      Padding="0"
+                      Background="Transparent"
+                      BorderThickness="0"
+                      Cursor="Hand"
+                      Click="OnFileExplorerClick">
+                <Image Source="avares://ReLPC/assets/elements/file-explorer.png"
+                       Width="30"
+                       Height="30"/>
+              </Button>
+              <Button Width="34"
+                      Height="34"
+                      Padding="0"
+                      Background="Transparent"
+                      BorderThickness="0"
+                      Cursor="Hand"
+                      Click="OnNewDatasetClick">
+                <Image Source="avares://ReLPC/assets/elements/new-file.png"
+                       Width="30"
+                       Height="30"/>
+              </Button>
+              <Button Width="34"
+                      Height="34"
+                      Padding="0"
+                      Background="Transparent"
+                      BorderThickness="0"
+                      Cursor="Hand"
+                      Click="OnLoadDatasetClick">
+                <Image Source="avares://ReLPC/assets/elements/open-file.png"
+                       Width="30"
+                       Height="30"/>
+              </Button>
+              <Button Width="34"
+                      Height="34"
+                      Padding="0"
+                      Background="Transparent"
+                      BorderThickness="0"
+                      Cursor="Hand">
+                <Image Source="avares://ReLPC/assets/elements/history.png"
+                       Width="30"
+                       Height="30"/>
+              </Button>
+            </StackPanel>
+
+            <Button Grid.Row="2"
+                    Width="34"
+                    Height="34"
+                    HorizontalAlignment="Center"
+                    Padding="0"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Click="OnLogoutClick">
+              <Image Source="avares://ReLPC/assets/elements/logout.png"
+                     Width="30"
+                     Height="30"/>
+            </Button>
+          </Grid>
+        </Border>
+
+        <Border x:Name="DataSetPanel"
+                Grid.Column="1"
+                Background="{StaticResource GlassPanelBrush}" 
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="16,22">
+          <Grid RowDefinitions="Auto,*">
+            <TextBlock Text="DATA SETS"
+                       Classes="header"
+                       FontSize="14"
+                       FontWeight="Black"
+                       Foreground="{StaticResource AccentBrush}"/>
+            <ListBox x:Name="DatasetListBox"
+                     Grid.Row="1"
+                     Margin="0,14,0,0"
+                     ItemsSource="{Binding UserDatasets}"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     SelectionChanged="OnUserDatasetSelectionChanged">
+              <ListBox.Styles>
+                <Style Selector="ListBoxItem">
+                  <Setter Property="Padding" Value="6,5"/>
+                  <Setter Property="CornerRadius" Value="6"/>
+                  <Setter Property="Margin" Value="0,0,0,4"/>
+                  <Setter Property="MinHeight" Value="28"/>
+                </Style>
+                <Style Selector="ListBoxItem:selected">
+                  <Setter Property="Background" Value="#40FF4E3B"/>
+                </Style>
+              </ListBox.Styles>
+              <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="models:DatasetRecord">
+                  <TextBlock Text="{Binding ListCaption}"
+                             TextTrimming="CharacterEllipsis"
+                             TextWrapping="NoWrap"
+                             FontSize="11"
+                             FontWeight="SemiBold"
+                             Foreground="#171717"
+                             VerticalAlignment="Center"/>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+          </Grid>
+        </Border>
+
+        <Border Grid.Column="2"
+                Background="{StaticResource GlassPanelBrush}"
+                
+                BorderThickness="1"
+                CornerRadius="8">
+          <Grid RowDefinitions="Auto,Auto,*,Auto"
+                Margin="46,38,46,34">
+            <StackPanel Grid.Row="0" Spacing="10">
+              <StackPanel Spacing="4">
+                <TextBlock Text="DATA ENTRY"
+                           Classes="header"
+                           FontFamily="Arial Black"
+                           FontSize="40"
+                           FontWeight="Black"
+                           Foreground="{StaticResource AccentBrush}"
+                           LetterSpacing="0"/>
+                <TextBlock Text="ENTER YOUR DATA (X, Y) BELOW"
+                           Margin="4,-4,0,0"
+                           FontSize="14"
+                           Foreground="{StaticResource AccentSoftBrush}"/>
+              </StackPanel>
+              <TextBox Classes="dataset-title"
+                       Margin="4,2,70,0"
+                       Text="{Binding CurrentDatasetName, Mode=TwoWay}"
+                       GotFocus="OnDatasetTitleGotFocus"
+                       LostFocus="OnDatasetTitleLostFocus"/>
+            </StackPanel>
+
+            <Grid Grid.Row="1"
+                  ColumnDefinitions="*,*"
+                  Margin="6,36,70,8">
+              <TextBlock Text="X VALUE"
+                         HorizontalAlignment="Center"
+                         FontSize="15"
+                         Foreground="{StaticResource AccentBrush}"/>
+              <TextBlock Grid.Column="1"
+                         Text="Y VALUE"
+                         HorizontalAlignment="Center"
+                         FontSize="15"
+                         Foreground="{StaticResource AccentBrush}"/>
+            </Grid>
+
+            <ScrollViewer Grid.Row="2"
+                          Margin="6,0,70,0"
+                          VerticalScrollBarVisibility="Auto">
+              <ItemsControl ItemsSource="{Binding DataPoints}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="models:DataPoint">
+                    <Grid ColumnDefinitions="*,*"
+                          Height="50"
+                          Margin="0,0,0,6">
+                      <TextBox Grid.Column="0"
+                               Text="{Binding X}"
+                               Background="#F9FFFFFF"
+                               Foreground="#171717"
+                               BorderBrush="{StaticResource AccentBrush}"
+                               BorderThickness="1"
+                               CornerRadius="5"
+                               Padding="10,8"
+                               FontSize="16"
+                               GotFocus="OnDataCellGotFocus"
+                               LostFocus="OnDataCellLostFocus"/>
+
+                      <TextBox Grid.Column="1"
+                               Margin="5,0,0,0"
+                               Text="{Binding Y}"
+                               Background="#F9FFFFFF"
+                               Foreground="#171717"
+                               BorderBrush="{StaticResource AccentBrush}"
+                               BorderThickness="1"
+                               CornerRadius="5"
+                               Padding="10,10"
+                               FontSize="16"
+                               GotFocus="OnDataCellGotFocus"
+                               LostFocus="OnDataCellLostFocus"/>
+                    </Grid>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </ScrollViewer>
+
+            <Grid Grid.Row="3"
+                  ColumnDefinitions="Auto,*"
+                  Margin="6,22,0,0">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Content="+"
+                        Width="40"
+                        Height="40"
+                        Background="#F9FFFFFF"
+                        Foreground="{StaticResource AccentBrush}"
+                        BorderBrush="{StaticResource AccentBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        FontSize="20"
+                        Click="OnAddRowClick"/>
+
+                <Button Content="-"
+                        Width="40"
+                        Height="40"
+                        Background="#F9FFFFFF"
+                        Foreground="{StaticResource AccentBrush}"
+                        BorderBrush="{StaticResource AccentBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        FontSize="22"
+                        Click="OnDeleteLastRowClick"/>
+              </StackPanel>
+
+              <StackPanel Grid.Column="1"
+                          Width="176"
+                          HorizontalAlignment="Right"
+                          Spacing="8">
+                <ComboBox x:Name="MethodComboBox"
+                          SelectedIndex="0"
+                          SelectionChanged="OnMethodSelectionChanged"
+                          Height="46"
+                          Background="#F9FFFFFF"
+                          Foreground="{StaticResource AccentBrush}"
+                          BorderBrush="{StaticResource AccentBrush}"
+                          BorderThickness="1"
+                          CornerRadius="8"
+                          Padding="14,7">
+                  <ComboBoxItem Content="Linear Regression"/>
+                  <ComboBoxItem Content="Polynomial Regression"/>
+                  <ComboBoxItem Content="Both"/>
+                </ComboBox>
+
+                <ComboBox x:Name="DegreeComboBox"
+                          SelectedIndex="0"
+                          IsEnabled="False"
+                          IsVisible="False"
+                          Height="46"
+                          Background="#F9FFFFFF"
+                          Foreground="{StaticResource AccentBrush}"
+                          BorderBrush="{StaticResource AccentBrush}"
+                          BorderThickness="1"
+                          CornerRadius="8"
+                          Padding="14,7">
+                  <ComboBoxItem Content="Degree 2"/>
+                  <ComboBoxItem Content="Degree 3"/>
+                  <ComboBoxItem Content="Degree 4"/>
+                </ComboBox>
+
+                <Button Content="CALCULATE"
+                        Height="42"
+                        Background="{StaticResource AccentBrush}"
+                        Foreground="White"
+                        BorderBrush="{StaticResource AccentBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        FontSize="13"
+                        FontWeight="Bold"
+                        Click="OnCalculateClick"/>
+              </StackPanel>
+            </Grid>
+          </Grid>
+        </Border>
+
+        <Border Grid.Column="3"
+                Background="{StaticResource GlassPanelBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+          <Grid RowDefinitions="Auto,*,Auto"
+                Margin="42,34,42,34">
+            <TextBlock Text="RESULT"
+                       Classes="header"
+                       FontFamily="Arial Black"
+                       FontSize="40"
+                       FontWeight="Black"
+                       Foreground="{StaticResource AccentBrush}"
+                       LetterSpacing="0"/>
+
+            <ScrollViewer Grid.Row="1"
+                          Margin="0,44,0,12"
+                          VerticalScrollBarVisibility="Auto">
+              <StackPanel Spacing="26">
+                <StackPanel Spacing="8">
+                  <TextBlock Text="EQUATION"
+                             Classes="header"
+                             FontSize="14"
+                             FontWeight="Bold"
+                             Foreground="{StaticResource AccentBrush}"/>
+                  <Border MinHeight="54"
+                          BorderBrush="#40FF4E3B"
+                          BorderThickness="0,0,0,1"
+                          Padding="0,0,0,12">
+                    <TextBlock Text="{Binding Equation}"
+                               TextWrapping="Wrap"
+                               FontSize="20"
+                               Foreground="#171717"/>
+                  </Border>
+                </StackPanel>
+
+                <StackPanel Spacing="8">
+                  <TextBlock Text="COEFFICIENT"
+                             Classes="header"
+                             FontSize="14"
+                             FontWeight="Bold"
+                             Foreground="{StaticResource AccentBrush}"/>
+                  <Border MinHeight="82"
+                          BorderBrush="#40FF4E3B"
+                          BorderThickness="0,0,0,1"
+                          Padding="0,0,0,12">
+                    <TextBlock Text="{Binding Coefficient}"
+                               TextWrapping="Wrap"
+                               FontSize="18"
+                               Foreground="#171717"/>
+                  </Border>
+                </StackPanel>
+
+                <StackPanel Spacing="8">
+                  <TextBlock Text="INTERMEDIATE COMPUTATIONS"
+                             Classes="header"
+                             FontSize="14"
+                             FontWeight="Bold"
+                             Foreground="{StaticResource AccentBrush}"/>
+                  <Border MinHeight="82"
+                          BorderBrush="#40FF4E3B"
+                          BorderThickness="0,0,0,1"
+                          Padding="0,0,0,12">
+                    <TextBlock Text="{Binding IntermediateComputations}"
+                               TextWrapping="Wrap"
+                               FontSize="18"
+                               Foreground="#171717"/>
+                  </Border>
+                </StackPanel>
+
+                <StackPanel Spacing="8">
+                  <TextBlock Text="PREDICTION"
+                             Classes="header"
+                             FontSize="14"
+                             FontWeight="Bold"
+                             Foreground="{StaticResource AccentBrush}"/>
+
+                  <Grid ColumnDefinitions="*,*,*,*"
+                        Margin="0,0,0,4">
+                    <TextBlock Text="x" FontSize="18" FontWeight="Bold" Foreground="{StaticResource AccentBrush}"/>
+                    <TextBlock Grid.Column="1" Text="y-hat" FontSize="18" FontWeight="Bold" Foreground="{StaticResource AccentBrush}"/>
+                    <TextBlock Grid.Column="2" Text="y" FontSize="18" FontWeight="Bold" Foreground="{StaticResource AccentBrush}"/>
+                    <TextBlock Grid.Column="3" Text="error" FontSize="18" FontWeight="Bold" Foreground="{StaticResource AccentBrush}"/>
+                  </Grid>
+
+                  <ItemsControl ItemsSource="{Binding Predictions}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="models:Prediction">
+                        <Grid ColumnDefinitions="*,*,*,*"
+                              Margin="0,0,0,8">
+                          <TextBlock Text="{Binding X}" Foreground="#171717"/>
+                          <TextBlock Grid.Column="1" Text="{Binding YPred}" Foreground="#171717"/>
+                          <TextBlock Grid.Column="2" Text="{Binding Y}" Foreground="#171717"/>
+                          <TextBlock Grid.Column="3" Text="{Binding Error}" Foreground="#171717"/>
+                        </Grid>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </StackPanel>
+              </StackPanel>
+            </ScrollViewer>
+
+            <Button Grid.Row="2"
+                    Content="SAVE"
+                    Width="176"
+                    Height="42"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Margin="0,8,0,0"
+                    Background="#F9FFFFFF"
+                    Foreground="{StaticResource AccentBrush}"
+                    BorderBrush="{StaticResource AccentBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    FontSize="13"
+                    FontWeight="Bold"
+                    Click="OnSaveDatasetClick"/>
+          </Grid>
+        </Border>
+      </Grid>
+    </Border>
+
+    <Border Width="8"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Stretch"
+            Background="Transparent"
+            ZIndex="20"
+            PointerPressed="OnResizeLeftPointerPressed"/>
+    <Border Height="8"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Top"
+            Background="Transparent"
+            ZIndex="20"
+            PointerPressed="OnResizeTopPointerPressed"/>
+    <Border Width="8"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Stretch"
+            Background="Transparent"
+            ZIndex="20"
+            PointerPressed="OnResizeRightPointerPressed"/>
+    <Border Height="8"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Bottom"
+            Background="Transparent"
+            ZIndex="20"
+            PointerPressed="OnResizeBottomPointerPressed"/>
+    <Border Width="14"
+            Height="14"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Background="Transparent"
+            ZIndex="21"
+            PointerPressed="OnResizeTopLeftPointerPressed"/>
+    <Border Width="14"
+            Height="14"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Background="Transparent"
+            ZIndex="21"
+            PointerPressed="OnResizeTopRightPointerPressed"/>
+    <Border Width="14"
+            Height="14"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Bottom"
+            Background="Transparent"
+            ZIndex="21"
+            PointerPressed="OnResizeBottomLeftPointerPressed"/>
+    <Border Width="14"
+            Height="14"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Background="Transparent"
+            ZIndex="21"
+            PointerPressed="OnResizeBottomRightPointerPressed"/>
+  </Grid>
+</Window>

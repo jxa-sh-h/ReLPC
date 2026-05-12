@@ -1,0 +1,219 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ReLPC"
+        x:Class="ReLPC.DashboardWindow"
+        mc:Ignorable="d"
+        Title="ReLPC - Dashboard"
+        Width="1280"
+        Height="760"
+        MinWidth="1024"
+        MinHeight="640"
+        WindowStartupLocation="CenterScreen"
+        Background="#FFF8F3">
+
+  <Grid ColumnDefinitions="320,*"
+        RowDefinitions="*">
+
+    <!-- Sidebar -->
+    <Border x:Name="SidebarPanel"
+            Grid.Column="0"
+            CornerRadius="0,10,10,0"
+            Padding="40,60,30,40">
+      <Border.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+          <GradientStop Color="#FF2D32" Offset="0"/>
+          <GradientStop Color="#FF3A34" Offset="0.32"/>
+          <GradientStop Color="#FF7550" Offset="0.5"/>
+          <GradientStop Color="#FF553C" Offset="0.68"/>
+          <GradientStop Color="#FF7442" Offset="1"/>
+        </LinearGradientBrush>
+      </Border.Background>
+
+      <Grid RowDefinitions="Auto,Auto,*,Auto"
+            ColumnDefinitions="*">
+        <StackPanel Spacing="30">
+          <TextBlock Text="DASHBOARD"
+                     FontSize="36"
+                     FontWeight="Black"
+                     Foreground="White"
+                     TextWrapping="Wrap"/>
+          <TextBlock Text="WELCOME, USER"
+                     FontSize="18"
+                     FontWeight="SemiBold"
+                     Foreground="#FFF1E8"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1"
+                    Margin="0,60,0,0"
+                    Spacing="20">
+          <Button Name="NewFileButton"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  Padding="0"
+                  Cursor="Hand"
+                  HorizontalAlignment="Left"
+                  Click="OnNewFileClick">
+            <StackPanel Orientation="Horizontal"
+                        Spacing="12">
+              <Image Source="avares://ReLPC/assets/elements/new-file.png"
+                     Width="24"
+                     Height="24"/>
+              <TextBlock Text="NEW DATASET "
+                         VerticalAlignment="Center"
+                         Foreground="White"
+                         FontSize="16"
+                         FontWeight="Bold"/>
+            </StackPanel>
+          </Button>
+
+          <Button Name="ExportButton"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  Padding="0"
+                  Cursor="Hand"
+                  HorizontalAlignment="Left"
+                  Click="OnExportClick">
+            <StackPanel Orientation="Horizontal"
+                        Spacing="12">
+              <Image Source="avares://ReLPC/assets/elements/open-file.png"
+                     Width="24"
+                     Height="24"/>
+              <TextBlock Text="LOAD DATASET"
+                         VerticalAlignment="Center"
+                         Foreground="White"
+                         FontSize="16"
+                         FontWeight="Bold"/>
+            </StackPanel>
+          </Button>
+            
+
+          <Button Name="LogoutButton"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  Padding="0"
+                  Cursor="Hand"
+                  HorizontalAlignment="Left"
+                  Click="OnLogoutClick">
+            <StackPanel Orientation="Horizontal"
+                        Spacing="12">
+              <Image Source="avares://ReLPC/assets/elements/logout.png"
+                     Width="24"
+                     Height="24"/>
+              <TextBlock Text="LOGOUT"
+                         VerticalAlignment="Center"
+                         HorizontalAlignment="Center"
+                         Foreground="White"
+                         FontSize="16"
+                         FontWeight="Bold"/>
+            </StackPanel>
+          </Button>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!-- Main content -->
+    <ScrollViewer Grid.Column="1"
+                  Margin="40,60,40,40"
+                  VerticalScrollBarVisibility="Auto">
+      <StackPanel Spacing="40">
+        <TextBlock Text="RECENT DATA SETS"
+                   FontSize="32"
+                   FontWeight="Black"
+                   Foreground="#FF4B34"/>
+
+        <UniformGrid Columns="3"
+                     HorizontalAlignment="Stretch">
+          <StackPanel Spacing="16" Margin="0,0,20,0">
+            <Border Height="200"
+                    Background="#FF4B34"
+                    CornerRadius="12"/>
+            <TextBlock Text="SAMPLE SET 1"
+                       HorizontalAlignment="Center"
+                       FontSize="14"
+                       Foreground="#FF4B34"/>
+          </StackPanel>
+
+          <StackPanel Spacing="16" Margin="10,0,10,0">
+            <Border Height="200"
+                    Background="#FF4B34"
+                    CornerRadius="12"/>
+            <TextBlock Text="SAMPLE SET 2"
+                       HorizontalAlignment="Center"
+                       FontSize="14"
+                       Foreground="#FF4B34"/>
+          </StackPanel>
+
+          <StackPanel Spacing="16" Margin="20,0,0,0">
+            <Border Height="200"
+                    Background="#FF4B34"
+                    CornerRadius="12"/>
+            <TextBlock Text="SAMPLE SET 2"
+                       HorizontalAlignment="Center"
+                       FontSize="14"
+                       Foreground="#FF4B34"/>
+          </StackPanel>
+        </UniformGrid>
+
+        <StackPanel Spacing="0">
+          <Border BorderBrush="#FF4B34" BorderThickness="0,0,0,1" Margin="0,0,0,10"/>
+          
+          <Grid ColumnDefinitions="*,Auto" Margin="0,15">
+            <StackPanel>
+              <TextBlock Text="SAMPLE SET 4"
+                         FontSize="16"
+                         Foreground="#FF4B34"/>
+              <TextBlock Text="User >>"
+                         FontSize="12"
+                         Foreground="#FF4B34"
+                         Opacity="0.6"/>
+            </StackPanel>
+            <TextBlock Grid.Column="1"
+                       Text="00/00/00"
+                       FontSize="12"
+                       Foreground="#FF4B34"
+                       VerticalAlignment="Center"/>
+          </Grid>
+          <Border BorderBrush="#FF4B34" BorderThickness="0,0,0,1" Opacity="0.3"/>
+
+          <Grid ColumnDefinitions="*,Auto" Margin="0,15">
+            <StackPanel>
+              <TextBlock Text="SAMPLE SET 5"
+                         FontSize="16"
+                         Foreground="#FF4B34"/>
+              <TextBlock Text="User >>"
+                         FontSize="12"
+                         Foreground="#FF4B34"
+                         Opacity="0.6"/>
+            </StackPanel>
+            <TextBlock Grid.Column="1"
+                       Text="00/00/00"
+                       FontSize="12"
+                       Foreground="#FF4B34"
+                       VerticalAlignment="Center"/>
+          </Grid>
+          <Border BorderBrush="#FF4B34" BorderThickness="0,0,0,1" Opacity="0.3"/>
+
+          <Grid ColumnDefinitions="*,Auto" Margin="0,15">
+            <StackPanel>
+              <TextBlock Text="SAMPLE SET 6"
+                         FontSize="16"
+                         Foreground="#FF4B34"/>
+              <TextBlock Text="User >>"
+                         FontSize="12"
+                         Foreground="#FF4B34"
+                         Opacity="0.6"/>
+            </StackPanel>
+            <TextBlock Grid.Column="1"
+                       Text="00/00/00"
+                       FontSize="12"
+                       Foreground="#FF4B34"
+                       VerticalAlignment="Center"/>
+          </Grid>
+          <Border BorderBrush="#FF4B34" BorderThickness="0,0,0,1" Opacity="0.3"/>
+        </StackPanel>
+      </StackPanel>
+    </ScrollViewer>
+  </Grid>
+</Window>

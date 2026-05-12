@@ -1,0 +1,195 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ReLPC"
+        xmlns:vm="clr-namespace:ReLPC.ViewModels"
+        x:Class="ReLPC.LoginWindow"
+        x:DataType="vm:LoginWindowViewModel"
+        mc:Ignorable="d"
+        d:DesignWidth="1214"
+        d:DesignHeight="686"
+        Title="ReLPC - Login"
+        Width="1214"
+        Height="686"
+        MinWidth="640"
+        MinHeight="360"
+        Background="#ff3131"
+        CanResize="True"
+        WindowStartupLocation="CenterScreen">
+
+  <Window.Resources>
+    <LinearGradientBrush x:Key="PageGradient" StartPoint="0,0" EndPoint="1,1">
+      <GradientStop Color="#FF2D32" Offset="0"/>
+      <GradientStop Color="#FF4B3A" Offset="0.55"/>
+      <GradientStop Color="#FF7442" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="PanelGradient" StartPoint="0,0" EndPoint="1,1">
+      <GradientStop Color="#FF2D32" Offset="0"/>
+      <GradientStop Color="#FF553C" Offset="1"/>
+    </LinearGradientBrush>
+
+    <local:BoolToPasswordIconConverter x:Key="BoolToPasswordIconConverter"/>
+  </Window.Resources>
+
+  <Viewbox Stretch="Uniform">
+    <Grid x:Name="PageRoot"
+          Width="1214"
+          Height="686"
+          Background="{StaticResource PageGradient}">
+      <Grid.Styles>
+        <Style Selector="TextBlock">
+          <Setter Property="FontFamily" Value="Montserrat"/>
+        </Style>
+        <Style Selector="TextBox">
+          <Setter Property="FontFamily" Value="Montserrat"/>
+        </Style>
+        <Style Selector="Button">
+          <Setter Property="FontFamily" Value="Montserrat"/>
+        </Style>
+      </Grid.Styles>
+
+      <StackPanel Margin="50,58,0,0"
+                  HorizontalAlignment="Left"
+                  VerticalAlignment="Top"
+                  Spacing="4">
+        <TextBlock Text="READY TO CONTINUE?"
+                   FontSize="48"
+                   FontWeight="Black"
+                   Foreground="White"
+                   LineHeight="52"/>
+
+        <TextBlock Text="Start analyzing your data with Re:LPC."
+                   FontSize="26"
+                   Foreground="White"
+                   LineHeight="32"/>
+      </StackPanel>
+
+      <Border x:Name="LoginPanel"
+              Width="500"
+              Height="578"
+              Margin="0,56,36,0"
+              Padding="36,26,36,28"
+              HorizontalAlignment="Right"
+              VerticalAlignment="Top"
+              Background="{StaticResource PanelGradient}"
+              CornerRadius="12">
+        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+          <Image Source="avares://ReLPC/assets/icons-logo/gr-logo.png"
+                 Width="60"
+                 HorizontalAlignment="Right"
+                 VerticalAlignment="Top"/>
+
+          <StackPanel Grid.Row="1"
+                      Margin="0,0,0,0"
+                      HorizontalAlignment="Center">
+            <Image Source="avares://ReLPC/assets/icons-logo/main-logo.png"
+                   Width="350"
+                   Stretch="Uniform"/>
+          </StackPanel>
+
+          <StackPanel Grid.Row="2"
+                      Margin="0,9,0,0"
+                      Spacing="17">
+            <StackPanel Spacing="6">
+              <TextBlock Text="STUDENT ID"
+                         Foreground="White"
+                         FontSize="18"
+                         FontWeight="SemiBold"
+                         Margin="7,0,0,0"/>
+              <TextBox Height="50"
+                       x:DataType="vm:LoginWindowViewModel"
+                       Text="{Binding Username, Mode=TwoWay}"
+                       Background="White"
+                       BorderThickness="0"
+                       CornerRadius="8"
+                       Padding="18,11"
+                       FontSize="20"
+                       Foreground="#333333"
+                       CaretBrush="#333333"/>
+            </StackPanel>
+
+            <StackPanel Spacing="6">
+              <TextBlock Text="PASSWORD"
+                         Foreground="White"
+                         FontSize="18"
+                         FontWeight="SemiBold"
+                         Margin="7,0,0,0"/>
+              <TextBox Height="50"
+                       x:DataType="vm:LoginWindowViewModel"
+                       Text="{Binding Password, Mode=TwoWay}"
+                       Background="White"
+                       BorderThickness="0"
+                       CornerRadius="8"
+                       Padding="18,11"
+                       FontSize="20"
+                       Foreground="#333333"
+                       CaretBrush="#333333"
+                       PasswordChar="{Binding PasswordChar}">
+                <TextBox.InnerRightContent>
+                  <Button Width="44"
+                          Height="44"
+                          Background="Transparent"
+                          BorderThickness="0"
+                          HorizontalContentAlignment="Center"
+                          VerticalContentAlignment="Center"
+                          Command="{Binding TogglePasswordVisibilityCommand}"
+                          Margin="0,0,8,0">
+                    <Image Width="30"
+                           Height="30"
+                           Source="{Binding IsPasswordVisible, Converter={StaticResource BoolToPasswordIconConverter}}"/>
+                  </Button>
+                </TextBox.InnerRightContent>
+              </TextBox>
+            </StackPanel>
+          </StackPanel>
+
+          <TextBlock Grid.Row="3"
+                     x:DataType="vm:LoginWindowViewModel"
+                     Text="{Binding LoginMessage}"
+                     Foreground="#FFEEDD"
+                     FontSize="14"
+                     TextWrapping="Wrap"
+                     HorizontalAlignment="Center"
+                     Margin="0,14,0,0"
+                     MinHeight="20"/>
+
+          <Button Grid.Row="4"
+                  Content="LOGIN"
+                  Width="154"
+                  Height="50"
+                  Margin="0,22,0,0"
+                  HorizontalAlignment="Center"
+                  Background="White"
+                  Foreground="#ff3131"
+                  CornerRadius="25"
+                  HorizontalContentAlignment="Center"
+                  VerticalContentAlignment="Center"
+                  FontSize="16"
+                  FontWeight="SemiBold"
+                  Cursor="Hand"
+                  Command="{Binding AttemptLoginCommand}"/>
+
+          <StackPanel Grid.Row="5"
+                      Margin="0,15,0,0"
+                      HorizontalAlignment="Center"
+                      Spacing="12">
+            <Button Background="Transparent"
+                    BorderThickness="0"
+                    Command="{Binding OpenSignupWindowCommand}"
+                    Cursor="Hand"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center">
+              <TextBlock Text="Create Account"
+                         Foreground="White"
+                         FontSize="17"
+                         FontWeight="SemiBold"
+                         TextDecorations="Underline"/>
+            </Button>
+          </StackPanel>
+        </Grid>
+      </Border>
+    </Grid>
+  </Viewbox>
+</Window>
