@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using ReLPC.Models;
 using ReLPC.Services;
@@ -675,7 +678,124 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         }
     }
 
+    private static readonly FilePickerFileType PdfFileType = new("PDF")
+    {
+        Patterns = ["*.pdf"],
+        MimeTypes = ["application/pdf"]
+    };
+
+    private async void OnExportDatasetClick(object? sender, RoutedEventArgs e)
+    {
+        var previousWindowState = WindowState;
+        if (previousWindowState == WindowState.FullScreen)
+        {
+            WindowState = WindowState.Normal;
+        }
+
+        try
+        {
+            var topLevel = TopLevel.GetTopLevel(this);
+            if (topLevel?.StorageProvider.CanSave != true)
+            {
+                await MessageWindow.ShowAsync(this, "Export unavailable", "Saving files is not supported on this platform.");
+                return;
+            }
+
+            Activate();
+
+            var safeName = SanitizeFileName(CurrentDatasetName.Trim());
+            if (string.IsNullOrEmpty(safeName))
+            {
+                safeName = "dataset";
+            }
+
+            var options = new FilePickerSaveOptions
+            {
+                Title = "Export Analysis Report",
+                SuggestedFileName = $"{safeName}_{DateTime.Now:yyyyMMdd_HHmm}.pdf",
+                DefaultExtension = "pdf",
+                ShowOverwritePrompt = true,
+                FileTypeChoices = [PdfFileType]
+            };
+
+            var file = await topLevel.StorageProvider.SaveFilePickerAsync(options);
+            if (file is null)
+            {
+                return;
+            }
+
+            var dataset = BuildDatasetRecordForExport();
+            var exportService = new ExportService();
+            var pdfBytes = exportService.ExportDatasetToPdf(dataset);
+
+            await using (var stream = await file.OpenWriteAsync())
+            {
+                await stream.WriteAsync(pdfBytes);
+                await stream.FlushAsync();
+            }
+
+            await MessageWindow.ShowAsync(
+                this,
+                "Export complete",
+                $"Your analysis report was saved as:\n{file.Name}");
+        }
+        catch (Exception ex)
+        {
+            await MessageWindow.ShowAsync(
+                this,
+                "Export failed",
+                $"Could not create the PDF report.\n\n{ex.Message}");
+        }
+        finally
+        {
+            WindowState = previousWindowState;
+        }
+    }
+
+    private DatasetRecord BuildDatasetRecordForExport()
+    {
+        var userId = AppServices.Session.CurrentUser?.Id ?? 0;
+        return new DatasetRecord
+        {
+            Id = _currentDatasetId,
+            UserId = userId,
+            Name = CurrentDatasetName.Trim(),
+            Equation = Equation,
+            Coefficient = Coefficient,
+            IntermediateComputations = IntermediateComputations,
+            Points = DataPoints
+                .Select(point => new DatasetPointRecord
+                {
+                    X = point.X,
+                    Y = point.Y
+                })
+                .ToList(),
+            Predictions = Predictions
+                .Select(prediction => new PredictionRecord
+                {
+                    X = prediction.X,
+                    YPred = prediction.YPred,
+                    Y = prediction.Y,
+                    Error = prediction.Error
+                })
+                .ToList()
+        };
+    }
+
+    private static string SanitizeFileName(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return string.Empty;
+        }
+
+        var invalid = Path.GetInvalidFileNameChars();
+        var chars = name.Select(ch => invalid.Contains(ch) ? '_' : ch).ToArray();
+        return new string(chars).Trim();
+    }
+
     private void SaveCurrentDataset()
+
     {
         var userId = AppServices.Session.CurrentUser?.Id ?? 0;
 
