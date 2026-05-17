@@ -21,6 +21,13 @@ public class DatasetRecord
     [BsonIgnore]
     public string ListCaption => $"{Name} · {UpdatedAt:g}";
 
+    [BsonIgnore]
+    public string DashboardTitle =>
+        string.IsNullOrWhiteSpace(Name) ? "UNTITLED DATASET" : Name.ToUpperInvariant();
+
+    [BsonIgnore]
+    public string ModifiedDateDisplay => UpdatedAt.ToString("MM/dd/yy");
+
     public override string ToString()
     {
         return $"{Name} - {UpdatedAt:g}";

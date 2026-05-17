@@ -502,6 +502,13 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void OnCloseClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
+        ReturnToDashboard();
+    }
+
+    private void ReturnToDashboard()
+    {
+        var dashboard = new DashboardWindow();
+        DesktopSession.ShowAsMainWindow(dashboard);
         Close();
     }
 
@@ -609,6 +616,9 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
             _currentDatasetId = dataset.Id;
             CurrentDatasetName = dataset.Name ?? "";
+
+            var userId = AppServices.Session.CurrentUser?.Id ?? 0;
+            AppServices.RecentDatasets.RecordOpened(userId, dataset.Id);
 
             DataPoints.Clear();
             foreach (var point in dataset.Points ?? [])

@@ -4,7 +4,9 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
+using ReLPC.Models;
 using ReLPC.Services;
+using ReLPC.ViewModels;
 
 namespace ReLPC
 {
@@ -12,10 +14,19 @@ namespace ReLPC
     {
         private readonly DispatcherTimer _gradientTimer;
         private readonly DateTime _gradientAnimationStartedAt = DateTime.Now;
+        private readonly DashboardWindowViewModel _viewModel;
 
         public DashboardWindow()
         {
             InitializeComponent();
+
+            _viewModel = new DashboardWindowViewModel(
+                AppServices.RecentDatasets,
+                AppServices.Database,
+                AppServices.Session);
+            DataContext = _viewModel;
+            _viewModel.RefreshRecentDatasets();
+            Opened += (_, _) => _viewModel.RefreshRecentDatasets();
 
             _gradientTimer = new DispatcherTimer
             {
@@ -36,9 +47,7 @@ namespace ReLPC
             var dataset = AppServices.Database.CreateDataset(
                 userId,
                 $"Untitled Dataset {DateTime.Now:yyyy-MM-dd HH-mm}");
-            var mainWindow = new MainWindow(dataset);
-            DesktopSession.ShowAsMainWindow(mainWindow);
-            Close();
+            OpenDataset(dataset);
         }
 
         private async void OnExportClick(object? sender, RoutedEventArgs e)
@@ -46,20 +55,41 @@ namespace ReLPC
             var userId = AppServices.Session.CurrentUser?.Id ?? 0;
             var datasets = AppServices.Database.GetDatasets(userId);
             var picker = new DatasetPickerWindow(datasets);
-            var dataset = await picker.ShowDialog<ReLPC.Models.DatasetRecord?>(this);
+            var dataset = await picker.ShowDialog<DatasetRecord?>(this);
             if (dataset is null)
             {
                 return;
             }
 
-            var mainWindow = new MainWindow(dataset);
-            DesktopSession.ShowAsMainWindow(mainWindow);
-            Close();
+            OpenDataset(dataset);
         }
 
-        private void OnHistoryClick(object? sender, RoutedEventArgs e)
+        private void OnRecentDatasetClick(object? sender, RoutedEventArgs e)
         {
-            // TODO: Implement history action
+            DatasetRecord? dataset = sender switch
+            {
+                Control { DataContext: DashboardDatasetItem item } => item.Dataset,
+                Control { DataContext: DatasetRecord record } => record,
+                _ => null
+            };
+
+            if (dataset is null)
+            {
+                return;
+            }
+
+            OpenDataset(dataset);
+        }
+
+        private void OpenDataset(DatasetRecord dataset)
+        {
+            var userId = AppServices.Session.CurrentUser?.Id ?? 0;
+            AppServices.RecentDatasets.RecordOpened(userId, dataset.Id);
+
+            var fresh = AppServices.Database.GetDataset(dataset.Id) ?? dataset;
+            var mainWindow = new MainWindow(fresh);
+            DesktopSession.ShowAsMainWindow(mainWindow);
+            Close();
         }
 
         private async void OnLogoutClick(object? sender, RoutedEventArgs e)
